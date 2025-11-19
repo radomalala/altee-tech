@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Brain, Rocket, Smartphone, Server, Wifi, GraduationCap, 
-  MessageCircle, CheckCircle, ArrowRight, Send, Loader2
+  MessageCircle, CheckCircle, ArrowRight, Send, Loader2, Menu, X
 } from 'lucide-react';
 
 // --- SERVICES STATIC DATA ---
@@ -53,29 +53,43 @@ const services = [
 // --- COMPONENTS ---
 
 const Navbar = () => {
+  const [open, setOpen] = useState(false);
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm fixed w-full z-50 border-b border-slate-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => { window.scrollTo(0,0); setOpen(false); }}>
             <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="font-bold text-lg">A</span>
             </div>
-            <span className="font-bold text-xl tracking-tight">Altee<span className="text-blue-400">Tech</span></span>
+            <span className="font-bold text-lg sm:text-xl tracking-tight">Altee<span className="text-blue-400">Tech</span></span>
           </div>
-          
+
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <>
-                <a href="#expertise" className="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition">Expertises</a>
-                <a href="#formation" className="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition">Formation</a>
-              </>
-              
-              {/* Front only: no staff/admin toggle */}
+              <a href="#expertise" className="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition">Expertises</a>
+              <a href="#formation" className="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition">Formation</a>
             </div>
           </div>
+
+          <button
+            aria-label="Ouvrir le menu"
+            className="md:hidden p-2 rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {open && (
+          <div className="md:hidden pb-3">
+            <div className="mt-2 space-y-1 border-t border-slate-800 pt-2">
+              <a onClick={() => setOpen(false)} href="#expertise" className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800">Expertises</a>
+              <a onClick={() => setOpen(false)} href="#formation" className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800">Formation</a>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
@@ -86,14 +100,14 @@ const Navbar = () => {
 
 // Section pour présenter les 6 domaines d'expertise
 const ExpertiseSection = () => (
-  <div id="expertise" className="py-20 bg-slate-50">
+  <div id="expertise" className="py-16 sm:py-20 bg-slate-50 scroll-mt-24">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 className="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-4">Nos Domaines d'Expertise</h2>
       <p className="text-center text-lg text-slate-500 mb-12 max-w-2xl mx-auto">Chaque service est propulsé par les dernières avancées en IA et les méthodes de développement les plus fiables.</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {services.map((service) => (
-          <div key={service.id} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-slate-100">
+          <div key={service.id} className="bg-white p-5 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-slate-100">
             <div className="flex items-start gap-4 mb-4">
               {service.icon}
               <h3 className="text-xl font-bold text-slate-800">{service.title}</h3>
@@ -112,7 +126,7 @@ const ExpertiseSection = () => (
       </div>
       
       {/* Call to action for Formation/Academy */}
-      <div id="formation" className="mt-16 text-center bg-blue-600 p-8 rounded-xl text-white">
+      <div id="formation" className="mt-12 sm:mt-16 text-center bg-blue-600 p-6 sm:p-8 rounded-xl text-white scroll-mt-24">
         <h3 className="text-2xl font-bold mb-3 flex items-center justify-center gap-2"><GraduationCap size={24} /> Altee Academy : Accélérez vos talents</h3>
         <p className="text-blue-100 mb-4">Formez vos équipes de demain avec nos parcours certifiants sur mesure en IA et développement avancé.</p>
         <a href="#contact-bottom" className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition shadow-md">
@@ -136,7 +150,7 @@ const ContactForm = () => {
     e.preventDefault();
     setStatus('loading');
     try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
+      const res = await fetch(`${API_BASE}/api/email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -154,7 +168,7 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="bg-white text-slate-900 p-8 rounded-xl shadow-2xl border border-slate-200">
+    <div className="bg-white text-slate-900 p-6 sm:p-8 rounded-xl shadow-2xl border border-slate-200">
       <h3 className="text-2xl font-bold mb-4 text-center">Démarrez votre projet !</h3>
       <p className="text-center text-slate-600 mb-6">Recevez un audit gratuit ou une proposition sur mesure.</p>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -180,7 +194,7 @@ const ContactForm = () => {
 
 // --- MAIN APP & HERO ---
 const Hero = () => (
-  <div className="relative bg-slate-900 text-white pt-32 pb-20 overflow-hidden">
+  <div className="relative bg-slate-900 text-white pt-28 sm:pt-32 pb-16 sm:pb-20 overflow-hidden">
      {/* Fond stylisé pour le Hero */}
      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <svg className="w-full h-full" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -189,12 +203,12 @@ const Hero = () => (
         </svg>
     </div>
 
-    <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
      <div className="mb-12 md:mb-0">
         <div className="inline-block px-4 py-1 rounded-full bg-slate-800 border border-slate-700 text-blue-400 text-sm font-semibold mb-6">🚀 Nouvelle Identité : Agence IA & Digitale</div>
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">Transformez votre futur avec <span className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">l'Intelligence Artificielle</span></h1>
         <p className="text-lg text-slate-400 mb-8 max-w-lg">Altee Tech fusionne expertise technique historique et innovation IA pour propulser votre entreprise. Développement, Automatisation, Formation.</p>
-        <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 max-w-xs">
+        <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 w-full sm:w-auto max-w-xs">
           <MessageCircle size={20} /> Discussion Instantanée
         </a>
       </div>
@@ -207,8 +221,8 @@ const Hero = () => (
 );
 
 const FooterContactSection = () => (
-  <div id="contact-bottom" className="bg-slate-900 text-white py-20">
-    <div className="max-w-7xl mx-auto px-4">
+  <div id="contact-bottom" className="bg-slate-900 text-white py-16 sm:py-20 scroll-mt-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 className="text-3xl font-bold text-center mb-6">Des questions ? Contactez-nous !</h2>
       <p className="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
         Notre équipe est à votre disposition pour toute information ou accompagnement personnalisé.

@@ -1,7 +1,9 @@
+/* eslint-env node */
 import express from 'express';
 import cors from 'cors';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import process from 'node:process';
 
 const app = express();
 const port = 3000;
@@ -100,7 +102,40 @@ app.post('/api/contact', async (req, res) => {
       console.log('   ↳ 🎓 Ajouté automatiquement aux pré-inscriptions Academy !');
     }
 
-    res.json({ success: true, message: "Sauvegardé en base de données !" });
+    // Optional: send notification email via Resend if configured
+    const sendEmailIfConfigured = async () => {
+      const apiKey = process.env.RESEND_API_KEY;
+      if (!apiKey) return { sent: false };
+      const to = process.env.RESEND_TO || 'contact@alteetech.com';
+      const from = process.env.RESEND_FROM || 'onboarding@resend.dev';
+      const subject = `Nouveau contact – ${name}`;
+      const html = `
+        <div style="font-family:Inter,system-ui,Arial,sans-serif;line-height:1.6;color:#0f172a">
+          <h2 style="margin:0 0 8px 0">Nouveau message de contact</h2>
+          <p style="margin:0 0 12px 0;color:#334155">Reçu depuis le site Altee Tech.</p>
+          <table style="border-collapse:collapse;width:100%">
+            <tr><td style="padding:8px 0;width:140px;color:#64748b">Nom</td><td>${name}</td></tr>
+            <tr><td style="padding:8px 0;color:#64748b">Entreprise</td><td>${company || '—'}</td></tr>
+            <tr><td style="padding:8px 0;color:#64748b">Email</td><td>${email}</td></tr>
+            <tr><td style="padding:8px 0;color:#64748b">Type</td><td>${type}</td></tr>
+            <tr><td style="padding:8px 0;color:#64748b">Message</td><td>${(message || '').replace(/\n/g,'<br/>')}</td></tr>
+          </table>
+        </div>`;
+      try {
+        if (typeof fetch === 'undefined') return { sent: false };
+        const resp = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from, to, subject, html })
+        });
+        return { sent: resp.ok };
+      } catch {
+        return { sent: false };
+      }
+    };
+
+    const emailInfo = await sendEmailIfConfigured();
+    res.json({ success: true, emailed: emailInfo.sent, message: "Sauvegardé en base de données !" });
   } catch (error) {
     console.error("Erreur SQL:", error);
     res.status(500).json({ success: false, error: "Erreur serveur" });
@@ -109,4 +144,55 @@ app.post('/api/contact', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`\n⚡️ Serveur démarré sur http://localhost:${port}`);
+});
+
+// Direct email (no DB) for parity with Vercel /api/email
+app.post('/api/email', async (req, res) => {
+  const { name, company, email, type, message } = req.body || {};
+  if (!name || !email) {
+    res.status(400).json({ success: false, error: 'Champs requis manquants' });
+    return;
+  }
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    res.json({ success: true, emailed: false, reason: 'RESEND_API_KEY missing' });
+    return;
+  }
+  const to = process.env.RESEND_TO || 'contact@alteetech.com';
+  const from = process.env.RESEND_FROM || 'onboarding@resend.dev';
+  const subject = `Nouveau contact – ${name}`;
+  const html = `
+    <div style="font-family:Inter,system-ui,Arial,sans-serif;line-height:1.6;color:#0f172a">
+      <h2 style="margin:0 0 8px 0">Nouveau message de contact</h2>
+      <p style="margin:0 0 12px 0;color:#334155">Reçu depuis le site Altee Tech.</p>
+      <table style="border-collapse:collapse;width:100%">
+        <tr><td style="padding:8px 0;width:140px;color:#64748b">Nom</td><td>${name}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b">Entreprise</td><td>${company || '—'}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b">Email</td><td>${email}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b">Type</td><td>${type || '—'}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b">Message</td><td>${(message || '').replace(/\n/g,'<br/>')}</td></tr>
+      </table>
+    </div>
+  `;
+  try {
+    if (typeof fetch === 'undefined') {
+      res.json({ success: true, emailed: false, reason: 'fetch unavailable' });
+      return;
+    }
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from, to, subject, html })
+    });
+    if (!resp.ok) {
+      const text = await resp.text();
+      console.warn('Resend error:', resp.status, text);
+      res.json({ success: true, emailed: false, reason: 'API error' });
+      return;
+    }
+    res.json({ success: true, emailed: true });
+  } catch (err) {
+    console.warn('Email send failed:', err.message);
+    res.json({ success: true, emailed: false, reason: 'network' });
+  }
 });
