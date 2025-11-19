@@ -6,7 +6,7 @@ import {
 
 // Inquiry Modal Component
 const InquiryModal = ({ isOpen, onClose, title, category, description }) => {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', request: '' });
   const [status, setStatus] = useState('idle');
   const API_BASE = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : '';
 
@@ -21,7 +21,7 @@ const InquiryModal = ({ isOpen, onClose, title, category, description }) => {
       });
       if (res.ok) {
         setStatus('success');
-        setTimeout(() => { onClose(); setStatus('idle'); setFormData({ name: '', email: '', phone: '' }); }, 2000);
+        setTimeout(() => { onClose(); setStatus('idle'); setFormData({ name: '', email: '', phone: '', request: '' }); }, 2000);
       } else {
         setStatus('error');
       }
@@ -45,6 +45,7 @@ const InquiryModal = ({ isOpen, onClose, title, category, description }) => {
           <input required type="text" className="w-full border rounded-lg p-3" placeholder="Votre nom" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
           <input required type="email" className="w-full border rounded-lg p-3" placeholder="Votre email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
           <input required type="tel" className="w-full border rounded-lg p-3" placeholder="Votre téléphone" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+          <textarea required className="w-full border rounded-lg p-3 h-24 resize-none" placeholder="Votre demande" value={formData.request} onChange={e => setFormData({ ...formData, request: e.target.value })}></textarea>
           <button type="submit" disabled={status === 'loading'} className={`w-full font-bold py-3 rounded-lg text-white transition ${status === 'success' ? 'bg-green-600' : status === 'loading' ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'}`}>
             {status === 'success' ? 'Demande Envoyée !' : status === 'loading' ? <Loader2 className="animate-spin mx-auto" size={24} /> : 'Envoyer ma demande'}
           </button>

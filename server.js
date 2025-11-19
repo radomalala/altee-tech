@@ -203,12 +203,12 @@ app.post('/api/email', async (req, res) => {
 
 // Inquiry endpoint (Formation/Service interest)
 app.post('/api/inquiry', async (req, res) => {
-  const { name, email, phone, title, category, description, hp } = req.body || {};
+  const { name, email, phone, title, category, description, request, hp } = req.body || {};
   if (hp && String(hp).trim() !== '') {
     res.json({ success: true, emailed: false, reason: 'spam' });
     return;
   }
-  if (!name || !email || !phone) {
+  if (!name || !email || !phone || !request) {
     res.status(400).json({ success: false, error: 'Champs requis manquants' });
     return;
   }
@@ -230,6 +230,7 @@ app.post('/api/inquiry', async (req, res) => {
         <tr><td style="padding:8px 0;width:120px;color:#64748b">Nom</td><td>${name}</td></tr>
         <tr><td style="padding:8px 0;color:#64748b">Email</td><td>${email}</td></tr>
         <tr><td style="padding:8px 0;color:#64748b">Téléphone</td><td>${phone}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748b">Demande</td><td>${(request || '').replace(/\n/g,'<br/>')}</td></tr>
       </table>
     </div>
   `;
