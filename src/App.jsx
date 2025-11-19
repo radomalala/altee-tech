@@ -4,6 +4,56 @@ import {
   MessageCircle, CheckCircle, ArrowRight, Send, Loader2, Menu, X, Shield
 } from 'lucide-react';
 
+// Inquiry Modal Component
+const InquiryModal = ({ isOpen, onClose, title, category, description }) => {
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [status, setStatus] = useState('idle');
+  const API_BASE = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : '';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const res = await fetch(`${API_BASE}/api/inquiry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, title, category, description })
+      });
+      if (res.ok) {
+        setStatus('success');
+        setTimeout(() => { onClose(); setStatus('idle'); setFormData({ name: '', email: '', phone: '' }); }, 2000);
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 relative" onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+          <X size={24} />
+        </button>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">{title}</h3>
+        <p className="text-sm text-slate-500 mb-4">{category}</p>
+        <p className="text-slate-700 mb-6">{description}</p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input required type="text" className="w-full border rounded-lg p-3" placeholder="Votre nom" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+          <input required type="email" className="w-full border rounded-lg p-3" placeholder="Votre email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+          <input required type="tel" className="w-full border rounded-lg p-3" placeholder="Votre téléphone" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+          <button type="submit" disabled={status === 'loading'} className={`w-full font-bold py-3 rounded-lg text-white transition ${status === 'success' ? 'bg-green-600' : status === 'loading' ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'}`}>
+            {status === 'success' ? 'Demande Envoyée !' : status === 'loading' ? <Loader2 className="animate-spin mx-auto" size={24} /> : 'Envoyer ma demande'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 // --- SERVICES STATIC DATA ---
 const services = [
   {
@@ -99,15 +149,29 @@ const Navbar = () => {
 
 
 // Section pour présenter les 6 domaines d'expertise
-const ExpertiseSection = () => (
-  <div id="expertise" className="py-16 sm:py-20 bg-slate-50 scroll-mt-24">
+const ExpertiseSection = () => {
+  const [modal, setModal] = useState({ isOpen: false, title: '', category: '', description: '' });
+
+  const openModal = (service) => {
+    setModal({
+      isOpen: true,
+      title: service.title,
+      category: 'Service',
+      description: service.desc
+    });
+  };
+
+  return (
+  <>
+    <InquiryModal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
+    <div id="expertise" className="py-16 sm:py-20 bg-slate-50 scroll-mt-24">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 className="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-4">Nos Domaines d'Expertise</h2>
       <p className="text-center text-lg text-slate-500 mb-12 max-w-2xl mx-auto">Chaque service est propulsé par les dernières avancées en IA et les méthodes de développement les plus fiables.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {services.map((service) => (
-          <div key={service.id} className="bg-white p-5 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-slate-100">
+          <div key={service.id} onClick={() => openModal(service)} className="bg-white p-5 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-slate-100 cursor-pointer">
             <div className="flex items-start gap-4 mb-4">
               {service.icon}
               <h3 className="text-xl font-bold text-slate-800">{service.title}</h3>
@@ -135,7 +199,9 @@ const ExpertiseSection = () => (
       </div>
     </div>
   </div>
-);
+  </>
+  );
+};
 
 
 // Front-only: contact form removed for now
@@ -327,6 +393,17 @@ const FooterContactSection = () => (
 
 // Section Formation (programmes Academy)
 const FormationSection = () => {
+  const [modal, setModal] = useState({ isOpen: false, title: '', category: '', description: '' });
+
+  const openModal = (program) => {
+    setModal({
+      isOpen: true,
+      title: program.title,
+      category: 'Formation',
+      description: program.bullets.join(' • ')
+    });
+  };
+
   const programs = [
     {
       title: 'Programmation Web & Mobile',
@@ -361,7 +438,9 @@ const FormationSection = () => {
   ];
 
   return (
-    <section id="formation" className="py-16 sm:py-20 bg-white scroll-mt-24">
+    <>
+      <InquiryModal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
+      <section id="formation" className="py-16 sm:py-20 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">Programmes de Formation</h2>
@@ -370,7 +449,7 @@ const FormationSection = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {programs.map((p, i) => (
-            <div key={i} className="rounded-xl border border-slate-200 bg-slate-50 hover:bg-white transition shadow-sm hover:shadow-md p-6">
+            <div key={i} onClick={() => openModal(p)} className="rounded-xl border border-slate-200 bg-slate-50 hover:bg-white transition shadow-sm hover:shadow-md p-6 cursor-pointer">
               <div className="flex items-start gap-3 mb-3">
                 {p.icon}
                 <h3 className="text-lg font-bold text-slate-800">{p.title}</h3>
@@ -381,15 +460,16 @@ const FormationSection = () => {
                 ))}
               </ul>
               <div className="mt-5 flex gap-2">
-                <a href="#contact-bottom" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                <button onClick={(e) => { e.stopPropagation(); openModal(p); }} className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
                   Demander le programme <ArrowRight size={16} />
-                </a>
+                </button>
               </div>
             </div>
           ))}
         </div>
       </div>
     </section>
+    </>
   );
 };
 
