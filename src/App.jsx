@@ -192,7 +192,7 @@ const Hero = () => (
     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
      <div className="mb-12 md:mb-0">
         <div className="inline-block px-4 py-1 rounded-full bg-slate-800 border border-slate-700 text-blue-400 text-sm font-semibold mb-6">🚀 Nouvelle Identité : Agence IA & Digitale</div>
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">Transformez votre futur avec <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-500">l'Intelligence Artificielle</span></h1>
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">Transformez votre futur avec <span className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">l'Intelligence Artificielle</span></h1>
         <p className="text-lg text-slate-400 mb-8 max-w-lg">Altee Tech fusionne expertise technique historique et innovation IA pour propulser votre entreprise. Développement, Automatisation, Formation.</p>
         <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 max-w-xs">
           <MessageCircle size={20} /> Discussion Instantanée
