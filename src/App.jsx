@@ -141,7 +141,7 @@ const ExpertiseSection = () => (
 // Front-only: contact form removed for now
 // Contact form (uses local SQLite API when running server.js)
 const ContactForm = () => {
-  const [formData, setFormData] = useState({ name: '', company: '', email: '', type: 'Transformation Digitale & IA', message: '' });
+  const [formData, setFormData] = useState({ name: '', company: '', email: '', type: 'Transformation Digitale & IA', message: '', hp: '' });
   const [status, setStatus] = useState('idle');
 
   const API_BASE = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : '';
@@ -172,6 +172,20 @@ const ContactForm = () => {
       <h3 className="text-2xl font-bold mb-4 text-center">Démarrez votre projet !</h3>
       <p className="text-center text-slate-600 mb-6">Recevez un audit gratuit ou une proposition sur mesure.</p>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Honeypot field (anti-bot) */}
+        <div aria-hidden="true" className="absolute -left-[9999px] top-auto w-px h-px overflow-hidden">
+          <label>
+            Ne pas remplir
+            <input
+              type="text"
+              name="website"
+              tabIndex="-1"
+              autoComplete="off"
+              value={formData.hp}
+              onChange={e => setFormData({ ...formData, hp: e.target.value })}
+            />
+          </label>
+        </div>
         <input required type="text" className="w-full border rounded-lg p-3" placeholder="Votre nom" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
         <input type="text" className="w-full border rounded-lg p-3" placeholder="Votre entreprise (facultatif)" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
         <input required type="email" className="w-full border rounded-lg p-3" placeholder="Votre email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />

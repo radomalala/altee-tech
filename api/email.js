@@ -4,7 +4,12 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
   }
-  const { name, company, email, type, message } = req.body || {};
+  const { name, company, email, type, message, hp } = req.body || {};
+  // Honeypot: silently accept but do not send
+  if (hp && String(hp).trim() !== '') {
+    res.status(200).json({ success: true, emailed: false, reason: 'spam' });
+    return;
+  }
   if (!name || !email) {
     res.status(400).json({ success: false, error: 'Champs requis manquants' });
     return;

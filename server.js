@@ -148,7 +148,11 @@ app.listen(port, () => {
 
 // Direct email (no DB) for parity with Vercel /api/email
 app.post('/api/email', async (req, res) => {
-  const { name, company, email, type, message } = req.body || {};
+  const { name, company, email, type, message, hp } = req.body || {};
+  if (hp && String(hp).trim() !== '') {
+    res.json({ success: true, emailed: false, reason: 'spam' });
+    return;
+  }
   if (!name || !email) {
     res.status(400).json({ success: false, error: 'Champs requis manquants' });
     return;
