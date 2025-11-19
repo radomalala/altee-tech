@@ -336,20 +336,23 @@ const ContactForm = () => {
 // --- MAIN APP & HERO ---
 const Hero = () => (
   <div className="relative bg-slate-900 text-white pt-28 sm:pt-32 pb-16 sm:pb-20 overflow-hidden">
-     {/* Fond stylisé pour le Hero */}
+     {/* Fond simplifié (bande supprimée) */}
      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <svg className="w-full h-full" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style={{stopColor:'#3b82f6'}} /><stop offset="100%" style={{stopColor:'#9333ea'}} /></linearGradient></defs>
-            <path d="M0 0h1440v450H0z" fill="#0f172a"/><path d="M1440 450v150H0v-150h1440z" fill="url(#gradient)"/><path d="M1440 450v150H0v-150h1440z" fill="#0f172a" opacity="0.1"/>
+            <path d="M0 0h1440v600H0z" fill="#0f172a"/>
         </svg>
     </div>
 
     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
-     <div className="mb-12 md:mb-0">
+     <div className="mb-12 md:mb-0 flex flex-col h-full">
         <div className="inline-block px-4 py-1 rounded-full bg-slate-800 border border-slate-700 text-blue-400 text-sm font-semibold mb-6">🚀 Nouvelle Identité : Agence IA & Digitale</div>
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">Transformez votre futur avec <span className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">l'Intelligence Artificielle</span></h1>
         <p className="text-lg text-slate-400 mb-8 max-w-lg">Altee Tech fusionne expertise technique historique et innovation IA pour propulser votre entreprise. Développement, Automatisation, Formation.</p>
-        {/* CTA WhatsApp retirée du bandeau */}
+        <div className="mt-auto">
+          <a href="https://nofy.tech" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold text-lg transition shadow-lg w-full sm:w-auto max-w-xs">
+            Nof'y Projet
+          </a>
+        </div>
       </div>
       
       <div className="w-full max-w-md mx-auto md:mx-0">
