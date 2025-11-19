@@ -143,11 +143,28 @@ const ExpertiseSection = () => (
 const ContactForm = () => {
   const [formData, setFormData] = useState({ name: '', company: '', email: '', type: 'Transformation Digitale & IA', message: '', hp: '' });
   const [status, setStatus] = useState('idle');
+  const [errors, setErrors] = useState({ name: '', email: '', message: '' });
+  const [touched, setTouched] = useState({ name: false, email: false, message: false });
 
   const API_BASE = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : '';
 
+  const validate = (data) => {
+    const next = { name: '', email: '', message: '' };
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(data.email || '').trim());
+    if (!data.name || String(data.name).trim().length < 2) next.name = 'Veuillez indiquer un nom valide (≥ 2 caractères).';
+    if (!emailOk) next.email = "Veuillez indiquer un email valide (ex: nom@domaine.com).";
+    if (!data.message || String(data.message).trim().length < 10) next.message = 'Décrivez votre besoin en quelques mots (≥ 10 caractères).';
+    return next;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const nextErrors = validate(formData);
+    setErrors(nextErrors);
+    setTouched({ name: true, email: true, message: true });
+    if (nextErrors.name || nextErrors.email || nextErrors.message) {
+      return;
+    }
     setStatus('loading');
     try {
       const res = await fetch(`${API_BASE}/api/email`, {
@@ -157,7 +174,9 @@ const ContactForm = () => {
       });
       if (res.ok) {
         setStatus('success');
-        setFormData({ name: '', company: '', email: '', type: 'Transformation Digitale & IA', message: '' });
+        setFormData({ name: '', company: '', email: '', type: 'Transformation Digitale & IA', message: '', hp: '' });
+        setErrors({ name: '', email: '', message: '' });
+        setTouched({ name: false, email: false, message: false });
       } else {
         setStatus('error');
       }
@@ -171,7 +190,7 @@ const ContactForm = () => {
     <div className="bg-white text-slate-900 p-6 sm:p-8 rounded-xl shadow-2xl border border-slate-200">
       <h3 className="text-2xl font-bold mb-4 text-center">Démarrez votre projet !</h3>
       <p className="text-center text-slate-600 mb-6">Recevez un audit gratuit ou une proposition sur mesure.</p>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* Honeypot field (anti-bot) */}
         <div aria-hidden="true" className="absolute -left-[9999px] top-auto w-px h-px overflow-hidden">
           <label>
@@ -186,13 +205,56 @@ const ContactForm = () => {
             />
           </label>
         </div>
-        <input required type="text" className="w-full border rounded-lg p-3" placeholder="Votre nom" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+        <div>
+          <input
+            type="text"
+            className={`w-full border rounded-lg p-3 ${touched.name && errors.name ? 'border-red-500' : ''}`}
+            placeholder="Votre nom"
+            value={formData.name}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
+            onBlur={() => { setTouched(t => ({ ...t, name: true })); setErrors(prev => ({ ...prev, ...validate({ ...formData, name: formData.name }) })); }}
+            aria-invalid={touched.name && !!errors.name}
+            aria-describedby="name-error"
+          />
+          {touched.name && errors.name && (
+            <p id="name-error" className="mt-1 text-sm text-red-600">{errors.name}</p>
+          )}
+        </div>
+
         <input type="text" className="w-full border rounded-lg p-3" placeholder="Votre entreprise (facultatif)" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
-        <input required type="email" className="w-full border rounded-lg p-3" placeholder="Votre email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+
+        <div>
+          <input
+            type="email"
+            className={`w-full border rounded-lg p-3 ${touched.email && errors.email ? 'border-red-500' : ''}`}
+            placeholder="Votre email"
+            value={formData.email}
+            onChange={e => setFormData({ ...formData, email: e.target.value })}
+            onBlur={() => { setTouched(t => ({ ...t, email: true })); setErrors(prev => ({ ...prev, ...validate({ ...formData, email: formData.email }) })); }}
+            aria-invalid={touched.email && !!errors.email}
+            aria-describedby="email-error"
+          />
+          {touched.email && errors.email && (
+            <p id="email-error" className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
+        </div>
         <select className="w-full border rounded-lg p-3" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
             <option>Transformation Digitale & IA</option><option>Développement Web/Mobile</option><option>Support IT & MCO</option><option>Formation & Academy</option>
         </select>
-        <textarea className="w-full border rounded-lg p-3 h-24 resize-none" placeholder="Décrivez brièvement votre besoin..." value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
+        <div>
+          <textarea
+            className={`w-full border rounded-lg p-3 h-24 resize-none ${touched.message && errors.message ? 'border-red-500' : ''}`}
+            placeholder="Décrivez brièvement votre besoin..."
+            value={formData.message}
+            onChange={e => setFormData({ ...formData, message: e.target.value })}
+            onBlur={() => { setTouched(t => ({ ...t, message: true })); setErrors(prev => ({ ...prev, ...validate({ ...formData, message: formData.message }) })); }}
+            aria-invalid={touched.message && !!errors.message}
+            aria-describedby="message-error"
+          />
+          {touched.message && errors.message && (
+            <p id="message-error" className="mt-1 text-sm text-red-600">{errors.message}</p>
+          )}
+        </div>
         <button 
           type="submit" 
           disabled={status === 'loading'} 
@@ -200,6 +262,16 @@ const ContactForm = () => {
         >
           {status === 'success' ? 'Message Envoyé !' : status === 'loading' ? <Loader2 className="animate-spin mx-auto" size={24} /> : 'Envoyer ma demande'}
         </button>
+
+        {/* Contact rapide */}
+        <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition">
+            <MessageCircle size={18} /> WhatsApp
+          </a>
+          <a href="tel:+261332952189" className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition">
+            <Smartphone size={18} /> Appeler
+          </a>
+        </div>
       </form>
     </div>
   );
