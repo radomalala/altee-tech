@@ -42,7 +42,7 @@ const InquiryModal = ({ isOpen, onClose, title, category, description }) => {
         <p className="text-sm text-slate-500 mb-4">{category}</p>
         <p className="text-slate-700 mb-6">{description}</p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input required type="text" className="w-full border rounded-lg p-3" placeholder="Votre nom" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+          <input required type="text" className="w-full border rounded-lg p-3" placeholder="Votre nom ou raison sociale" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
           <input required type="email" className="w-full border rounded-lg p-3" placeholder="Votre email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
           <input required type="tel" className="w-full border rounded-lg p-3" placeholder="Votre téléphone" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
           <textarea required className="w-full border rounded-lg p-3 h-24 resize-none" placeholder="Votre demande" value={formData.request} onChange={e => setFormData({ ...formData, request: e.target.value })}></textarea>
@@ -208,7 +208,7 @@ const ExpertiseSection = () => {
 // Front-only: contact form removed for now
 // Contact form (uses local SQLite API when running server.js)
 const ContactForm = () => {
-  const [formData, setFormData] = useState({ name: '', company: '', email: '', type: 'Transformation Digitale & IA', message: '', hp: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', type: 'Transformation Digitale & IA', message: '', hp: '' });
   const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [touched, setTouched] = useState({ name: false, email: false, message: false });
@@ -276,7 +276,7 @@ const ContactForm = () => {
           <input
             type="text"
             className={`w-full border rounded-lg p-3 ${touched.name && errors.name ? 'border-red-500' : ''}`}
-            placeholder="Votre nom"
+            placeholder="Votre nom ou raison sociale"
             value={formData.name}
             onChange={e => setFormData({ ...formData, name: e.target.value })}
             onBlur={() => { setTouched(t => ({ ...t, name: true })); setErrors(prev => ({ ...prev, ...validate({ ...formData, name: formData.name }) })); }}
@@ -287,8 +287,6 @@ const ContactForm = () => {
             <p id="name-error" className="mt-1 text-sm text-red-600">{errors.name}</p>
           )}
         </div>
-
-        <input type="text" className="w-full border rounded-lg p-3" placeholder="Votre entreprise (facultatif)" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
 
         <div>
           <input
@@ -329,16 +327,6 @@ const ContactForm = () => {
         >
           {status === 'success' ? 'Message Envoyé !' : status === 'loading' ? <Loader2 className="animate-spin mx-auto" size={24} /> : 'Envoyer ma demande'}
         </button>
-
-        {/* Contact rapide */}
-        <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition">
-            <MessageCircle size={18} /> WhatsApp
-          </a>
-          <a href="tel:+261332952189" className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition">
-            <Smartphone size={18} /> Appeler
-          </a>
-        </div>
       </form>
     </div>
   );
@@ -361,9 +349,7 @@ const Hero = () => (
         <div className="inline-block px-4 py-1 rounded-full bg-slate-800 border border-slate-700 text-blue-400 text-sm font-semibold mb-6">🚀 Nouvelle Identité : Agence IA & Digitale</div>
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">Transformez votre futur avec <span className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">l'Intelligence Artificielle</span></h1>
         <p className="text-lg text-slate-400 mb-8 max-w-lg">Altee Tech fusionne expertise technique historique et innovation IA pour propulser votre entreprise. Développement, Automatisation, Formation.</p>
-        <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 w-full sm:w-auto max-w-xs">
-          <MessageCircle size={20} /> Discussion Instantanée
-        </a>
+        {/* CTA WhatsApp retirée du bandeau */}
       </div>
       
       <div className="w-full max-w-md mx-auto md:mx-0">
@@ -384,8 +370,8 @@ const FooterContactSection = () => (
         <a href="mailto:contact@alteetech.com" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition flex items-center justify-center gap-3">
           <Send size={24} /> Envoyer un Email
         </a>
-        <a href="tel:+261332952189" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition flex items-center justify-center gap-3">
-          <Smartphone size={24} /> Appeler
+        <a href="https://wa.me/261332952189" target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition flex items-center justify-center gap-3">
+          <MessageCircle size={24} /> WhatsApp
         </a>
       </div>
     </div>
