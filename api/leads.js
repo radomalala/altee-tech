@@ -1,6 +1,5 @@
-// Vercel Serverless Function: Leads
-// NOTE: SQLite local file persistence is not reliable on Vercel deployments.
-// Replace with a hosted DB (Neon/Postgres, PlanetScale/MySQL, Supabase) for production.
+// Leads serverless with Postgres fallback
+import { safeQuery } from './db.js';
 
 const sampleLeads = [
   { id: 1, name: 'Jean Dupont', company: 'Logistix SA', type: 'Devis IA', date: '19/11/2025', status: 'Nouveau' },
@@ -12,5 +11,6 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
   }
-  res.status(200).json(sampleLeads);
+  const rows = await safeQuery('SELECT id, name, company, type, date, status FROM leads ORDER BY id DESC');
+  res.status(200).json(rows && rows.length ? rows : sampleLeads);
 }

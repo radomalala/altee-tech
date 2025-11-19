@@ -51,6 +51,22 @@ Le backend Express classique ne tourne pas de façon persistante sur Vercel. Pou
 Dans le front, les appels utilisent maintenant des chemins relatifs (`/api/leads`) au lieu de `http://localhost:3000/api/leads`.
 
 ### SQLite & Persistance
+### Intégration Postgres (Vercel Postgres / Neon)
+1. Dans le dashboard Vercel: Storage → Postgres → Create Database.
+2. Copier la variable `POSTGRES_URL` dans Project Settings → Environment Variables.
+3. Installer le client: `npm install @vercel/postgres`.
+4. Fichiers ajoutés:
+	- `api/db.js` (helper connexion + query)
+	- `scripts/migrate.js` (création des tables)
+	- `.env.example` (exemple variable)
+5. Lancer la migration en local:
+	```powershell
+	$env:POSTGRES_URL="postgres://USER:PASSWORD@HOST:PORT/DB"; node scripts/migrate.js
+	```
+6. Les fonctions `api/leads.js`, `api/trainings.js`, `api/contact.js` utilisent Postgres si disponible et basculent sur des données de démonstration sinon.
+7. Déployer (les fetch du front `/api/*` exploitent déjà les fonctions serverless).
+
+En production, remplace les données de fallback par une logique stricte (retour d'erreur si DB indisponible) et ajoute éventuellement un système de logs/observabilité.
 La base SQLite locale (fichier `database.db`) ne persistera pas entre deux exécutions serverless sur Vercel. Pour un usage réel, migrer vers une base hébergée (ex: Postgres Neon, Supabase, PlanetScale). Adapter ensuite les fonctions serverless pour requêter cette base.
 
 ## Publication (Git)
