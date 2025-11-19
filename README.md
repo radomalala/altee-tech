@@ -41,6 +41,18 @@ Les classes nouvelles (`bg-linear-to-r`, `shrink-0`, etc.) remplacent les ancien
 
 Un fichier `vercel.json` est présent pour expliciter la config.
 
+### API Serverless (Important)
+Le backend Express classique ne tourne pas de façon persistante sur Vercel. Pour cela la logique a été convertie en fonctions serverless situées dans `api/` :
+- `api/leads.js`
+- `api/trainings.js`
+- `api/contact.js`
+- `api/login.js`
+
+Dans le front, les appels utilisent maintenant des chemins relatifs (`/api/leads`) au lieu de `http://localhost:3000/api/leads`.
+
+### SQLite & Persistance
+La base SQLite locale (fichier `database.db`) ne persistera pas entre deux exécutions serverless sur Vercel. Pour un usage réel, migrer vers une base hébergée (ex: Postgres Neon, Supabase, PlanetScale). Adapter ensuite les fonctions serverless pour requêter cette base.
+
 ## Publication (Git)
 ```powershell
 git init

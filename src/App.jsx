@@ -112,7 +112,7 @@ const LoginPage = ({ onLoginSuccess }) => {
 
     // Simulation de connexion (le mot de passe "admin123" est stocké dans le backend simulé)
     try {
-      const res = await fetch('http://localhost:3000/api/login', {
+      const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -249,8 +249,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resLeads = await fetch('http://localhost:3000/api/leads');
-        const resTrainings = await fetch('http://localhost:3000/api/trainings');
+        const resLeads = await fetch('/api/leads');
+        const resTrainings = await fetch('/api/trainings');
         setLeads(await resLeads.json());
         setTrainings(await resTrainings.json());
       } catch (err) { console.error("Erreur de récupération des données admin:", err); }
@@ -390,7 +390,7 @@ const ContactForm = () => {
     setStatus('loading');
     try {
       // NOTE: Ceci est une simulation de l'envoi au serveur Node.js simulé
-      const res = await fetch('http://localhost:3000/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
