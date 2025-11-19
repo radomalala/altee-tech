@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Brain, Rocket, Smartphone, Server, Wifi, GraduationCap, 
-  MessageCircle, CheckCircle, ArrowRight, Send, Loader2, Menu, X
+  MessageCircle, CheckCircle, ArrowRight, Send, Loader2, Menu, X, Shield
 } from 'lucide-react';
 
 // --- SERVICES STATIC DATA ---
@@ -126,10 +126,10 @@ const ExpertiseSection = () => (
       </div>
       
       {/* Call to action for Formation/Academy */}
-      <div id="formation" className="mt-12 sm:mt-16 text-center bg-blue-600 p-6 sm:p-8 rounded-xl text-white scroll-mt-24">
+      <div id="academy-cta" className="mt-12 sm:mt-16 text-center bg-blue-600 p-6 sm:p-8 rounded-xl text-white scroll-mt-24">
         <h3 className="text-2xl font-bold mb-3 flex items-center justify-center gap-2"><GraduationCap size={24} /> Altee Academy : Accélérez vos talents</h3>
-        <p className="text-blue-100 mb-4">Formez vos équipes de demain avec nos parcours certifiants sur mesure en IA et développement avancé.</p>
-        <a href="#contact-bottom" className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition shadow-md">
+        <p className="text-blue-100 mb-4">Formez vos équipes de demain avec nos parcours certifiants sur mesure en IA, DevOps et développement.</p>
+        <a href="#formation" className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition shadow-md">
           Voir les programmes <ArrowRight size={20} />
         </a>
       </div>
@@ -325,6 +325,74 @@ const FooterContactSection = () => (
   </div>
 );
 
+// Section Formation (programmes Academy)
+const FormationSection = () => {
+  const programs = [
+    {
+      title: 'Programmation Web & Mobile',
+      icon: <Smartphone className="w-7 h-7 text-pink-400" />,
+      bullets: ['Front-end (React) & Back-end (Node)', 'Mobile: Flutter / Kotlin / Swift', 'Projets encadrés & bonnes pratiques']
+    },
+    {
+      title: 'DevOps',
+      icon: <Server className="w-7 h-7 text-green-400" />,
+      bullets: ['CI/CD, Docker & Containers', 'IaC (Terraform) & Cloud', 'Observabilité & SRE bases']
+    },
+    {
+      title: 'Intelligence Artificielle',
+      icon: <Brain className="w-7 h-7 text-blue-400" />,
+      bullets: ['IA Générative & Agents', 'ML pratique: data → modèle → déploiement', 'Ethique & bonnes pratiques']
+    },
+    {
+      title: 'Métiers en ligne',
+      icon: <GraduationCap className="w-7 h-7 text-orange-400" />,
+      bullets: ['Productivité & Outils no-code', 'Freelance & personal branding', 'Workflow pro à distance']
+    },
+    {
+      title: 'Support IT',
+      icon: <Wifi className="w-7 h-7 text-yellow-400" />,
+      bullets: ['Helpdesk N1 / N2', 'ITIL, supervision & MCO', 'Sécurité opérationnelle de base']
+    },
+    {
+      title: 'Cybersécurité & Ethical Hacking',
+      icon: <Shield className="w-7 h-7 text-purple-400" />,
+      bullets: ['Principes de sécurité & durcissement', 'Tests d’intrusion (intro) & outils', 'Gestion des risques & sensibilisation']
+    }
+  ];
+
+  return (
+    <section id="formation" className="py-16 sm:py-20 bg-white scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">Programmes de Formation</h2>
+          <p className="text-slate-500 mt-3 max-w-2xl mx-auto">Des parcours concrets, orientés projet et employabilité, avec accompagnement par des experts.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {programs.map((p, i) => (
+            <div key={i} className="rounded-xl border border-slate-200 bg-slate-50 hover:bg-white transition shadow-sm hover:shadow-md p-6">
+              <div className="flex items-start gap-3 mb-3">
+                {p.icon}
+                <h3 className="text-lg font-bold text-slate-800">{p.title}</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-600">
+                {p.bullets.map((b, idx) => (
+                  <li key={idx} className="flex items-start"><CheckCircle size={16} className="text-blue-500 mr-2 mt-0.5 shrink-0" /> {b}</li>
+                ))}
+              </ul>
+              <div className="mt-5 flex gap-2">
+                <a href="#contact-bottom" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                  Demander le programme <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const App = () => {
   return (
     <div className="font-sans antialiased text-slate-900 bg-white min-h-screen">
@@ -332,6 +400,7 @@ const App = () => {
       <main>
         <Hero />
         <ExpertiseSection />
+        <FormationSection />
         <FooterContactSection />
       </main>
     </div>
